@@ -18,7 +18,13 @@ app.get("/", (req, res) => {
 });
 
 app.get("/users", (req, res) => {
-  res.send(users);
+  if (req.query.name) {
+    const search = req.query.name;
+    const filtered = users.filter(user => user.name.match(search));
+    res.send(filtered);
+  } else {
+    res.send(users);
+  }
 });
 
 app.post("/users", (req, res) => {
