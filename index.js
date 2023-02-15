@@ -19,15 +19,29 @@ const users = [
 ];
 
 
-
+//mongo imported code
 const uri = "mongodb+srv://sadmanAdor:35BFKXAJcX24x8P9@cluster0.9mathic.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-client.connect(err => {
-  console.log("database connected")
-  const collection = client.db("simple-node-mongo-sever").collection("users");
-  // perform actions on the collection object
-  client.close();
-});
+async function run(){
+try{
+  const userCollection = client.db('simple-node-mongo-server').collection('users');
+  const users = {name: "farhana", email: "far@gmail.com"}
+  // const result = await userCollection.insertOne(users);
+  // console.log(result)
+  app.post("/users", async (req, res) => {
+    console.log("post api called");
+    const user = req.body;
+    const result = await userCollection.insertOne(user);
+    users._id = result.insertedId;
+    console.log(result)
+    res.send(user);
+  });
+}
+finally{
+  console.log('data inserted')
+}
+}
+run().catch(err => console.error(err))
 
 
 app.get("/", (req, res) => {
@@ -44,14 +58,14 @@ app.get("/users", (req, res) => {
   }
 });
 
-app.post("/users", (req, res) => {
-  console.log("post api called");
-  const user = req.body;
-  user.id = users.length + 1;
-  users.push(user);
-  console.log(user);
-  res.send(user);
-});
+// app.post("/users", (req, res) => {
+//   console.log("post api called");
+//   const user = req.body;
+//   user.id = users.length + 1;
+//   users.push(user);
+//   console.log(user);
+//   res.send(user);
+// });
 
 app.listen(port, () => {
   console.log(`listening port 5000`);
